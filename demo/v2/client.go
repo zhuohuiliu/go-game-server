@@ -6,10 +6,10 @@ import (
 	"time"
 )
 
-func main1() {
+func main() {
 	fmt.Println("Client Start...")
 	time.Sleep(time.Second)
-	conn, err := net.Dial("tcp", "127.0.0.1:8881")
+	conn, err := net.Dial("tcp", "127.0.0.1:8882")
 	if err != nil {
 		fmt.Println("Client Start Error", err)
 		return

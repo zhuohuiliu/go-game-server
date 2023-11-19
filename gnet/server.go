@@ -34,31 +34,30 @@ func (s *Server) Start() {
 		return
 	}
 	fmt.Printf("start server, server host: %s:%d \n", s.Ip, s.Port)
+	var cID = 0
 	for {
-		conn, err := listen.Accept()
+		conn, err := listen.AcceptTCP()
 		fmt.Printf("%p \n", &conn)
 		if err != nil {
 			fmt.Println("accept conn error: ", err)
 			continue
 		}
 
-		go func() {
-			for {
-				buf := make([]byte, 1024)
-				n, err := conn.Read(buf)
-				if err != nil {
-					fmt.Println("read client data", err)
-					return
-				}
-				fmt.Println("accept client message: ", string(buf[:n]))
+		dealConn := NewConnection(conn, cID, CallBackToClient)
 
-				_, err = conn.Write(buf[:n])
-				if err != nil {
-					fmt.Println("write data", err)
-				}
-			}
-		}()
+		cID++
+		dealConn.Start()
 	}
+}
+
+func CallBackToClient(c *net.TCPConn, buf []byte, len int) error {
+	_, err := c.Write(buf[:len])
+	if err != nil {
+		fmt.Println("write data", err)
+		return err
+	}
+
+	return nil
 }
 
 func (s *Server) Stop() {
